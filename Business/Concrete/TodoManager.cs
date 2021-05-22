@@ -19,7 +19,6 @@ namespace Business.Concrete
         }
 
 
-        //[CacheAspect]
         public IDataResult<List<Todo>> GetAll()
         {
             return new SuccessDataResult<List<Todo>>(_todoDal.GetAll(), Messages.TodoListed);
@@ -27,11 +26,10 @@ namespace Business.Concrete
 
         public IDataResult<Todo> GetById(int id)
         {
-            return new SuccessDataResult<Todo>(_todoDal.Get(x => x.Id == id));
+            return new SuccessDataResult<Todo>(_todoDal.Get(x => x.ID == id));
         }
 
-
-        //[ValidationAspect(typeof(ProductValidator))]
+        
         public IResult Add(Todo todo)
         {
 
@@ -42,7 +40,6 @@ namespace Business.Concrete
 
         }
 
-        //[CacheRemoveAspect("IProductService.Get")]
         public IResult Delete(Todo todo)
         {
             _todoDal.Delete(todo);

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo App UI</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<body>
+<header class="mb-4">
+    <ul class="nav bg-dark justify-content-center p-4">
+        <li class="nav-item mx-2">
+            <div class="form-floating">
+                <input type="hidden" id="idText" value="">
+                <input type="text" class="form-control" id="TitleText" placeholder="Title">
+                <label for="TitleText">Title</label>
+            </div>
+        </li>
+        <li class="nav-item mx-2">
+            <div class="form-floating">
+                <input type="text" class="form-control" id="DescriptionText" placeholder="Description">
+                <label for="DescriptionText">Description</label>
+            </div>
+        </li>
+        <li class="nav-item mx-2">
+            <div class="form-floating">
+                <select class="form-select" id="StatusSelect" aria-label="Floating label select example">
+                    <option selected>Select One</option>
+                </select>
+                <label for="StatusSelect">Status</label>
+            </div>
+        </li>
+        <button type="button" id="btnNewTodo" class="btn btn-primary btn-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/>
+            </svg>
+        </button>
+        <button type="button" id="btnEditTodo" class="btn btn-warning btn-lg visually-hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+            </svg>
+        </button>
+        <span style="cursor: pointer" id="btnCancel" class="m-2 p-2 text-white fw-light visually-hidden">
+            Cancel
+        </span>
+    </ul>
+</header>
+<section class="container border">
+    <div class="accordion accordion-flush" id="accordionTodoList">
+    </div>
+</section>
+
+
+<script>
+    const Url = 'https://localhost:44319/api/todos/';
+
+    $(document).ready(function (){
+        $('#btnNewTodo').click(()=>{
+            let title = $('#TitleText').val();
+            let description = $('#DescriptionText').val();
+            let status = $('#StatusSelect').select().val();
+            $.ajax({
+                url: Url+'add',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({ Title: title, Description: description,Status:status }),
+                success: function () {
+                    toastr.success('Success Progress');
+                    $('#TitleText').val("");
+                    $('#DescriptionText').val("");
+                    location.reload();
+                },
+                error: function () {
+                    toastr.success('Error!','Please try again later');
+                }
+            });
+        });
+
+        $('#btnEditTodo').click(()=>{
+            let id = $('#idText').val();
+            let title = $('#TitleText').val();
+            let description = $('#DescriptionText').val();
+            let status = $('#StatusSelect').select().val();
+            $.ajax({
+                url: Url+'update',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({ Id:id ,Title: title, Description: description,Status:status }),
+                success: function () {
+                    toastr.success('Success Progress');
+                    $('#idText').val("");
+                    $('#TitleText').val("");
+                    $('#DescriptionText').val("");
+                    $('#StatusSelect').val("Select One");
+                    location.reload();
+                },
+                error: function () {
+                    toastr.success('Error!','Please try again later');
+                }
+            });
+        });
+
+        $('body').on('click', '.btnDeleteTodo', function () {
+            let id = $(this).val();
+            $.ajax({
+                url: Url+'delete',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({ Id : id }),
+                success: function () {
+                    toastr.success('Success Progress');
+                    location.reload();
+                },
+                error: function () {
+                    toastr.success('Error!','Please try again later');
+                }
+            });
+        });
+
+        $('body').on('click', '.btnEdit', function () {
+            let id = $(this).val();
+            $.get(Url+"getbyid?id="+id,function (data){
+                $('#idText').val(data.data.id);
+                $('#TitleText').val(data.data.title);
+                $('#DescriptionText').val(data.data.description);
+                $('#StatusSelect').val(data.data.status);
+                $('#btnEditTodo').removeClass("visually-hidden");
+                $('#btnCancel').removeClass("visually-hidden");
+                $('#btnNewTodo').addClass("visually-hidden");
+                $("html, body").animate({scrollTop: 0}, 100);
+            })
+        });
+
+        $('#btnCancel').click(()=>{
+            $('#idText').val("");
+            $('#TitleText').val("");
+            $('#DescriptionText').val("");
+            $('#StatusSelect').val("Select One");
+            $('#btnEditTodo').addClass("visually-hidden");
+            $('#btnCancel').addClass("visually-hidden");
+            $('#btnNewTodo').removeClass("visually-hidden");
+        })
+    })
+
+
+    let statusListData = '';
+    $.get(Url+"getstatus",function (data){
+        $.each(data, function( index, value ){
+            let htmlText1 = '<option value="'+value.value+'">';
+            let name = value.name;
+            let htmlText2 = '</option>';
+            statusListData += htmlText1+name+htmlText2;
+        });
+        $('#StatusSelect').append(statusListData);
+    })
+
+
+
+
+    $.get(Url+"getall",function (data){
+        $.get(Url+"getstatus",function (a){
+        $.each( data.data, function( index, value ){
+            let color;
+            if(value.status == 0){
+                color = ' bg-primary'
+            }else if (value.status == 1){
+                color = ' bg-warning'
+            }else if (value.status == 2){
+                color = ' bg-success'
+            }
+            let dateTime = value.createdDate.split('T')
+            let date = dateTime[0].split('-');
+            let time = dateTime[1].split(':')
+            let todoListData = '';
+            let htmlText1 = '<div class="accordion-item"><h2 class="accordion-header" id="flush-heading'+value.id+'"><button class="text-white accordion-button collapsed'+
+                color
+                +'" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse'+value.id+'" aria-expanded="false" aria-controls="flush-collapse'+value.id+'">'
+            let title = value.title+'<span class="badge badge-pill bg-dark mx-3">'+date[2]+'/'+date[1]+'/'+date[0]+' '+time[0]+':'+time[1]+'</span>';
+            let htmlText2 = '</button></h2><div id="flush-collapse'+value.id+'" class="accordion-collapse collapse" aria-labelledby="flush-heading'+value.id+'" data-bs-parent="#accordionTodoList"><div class="accordion-body">';
+            let description = value.description;
+            let htmlText3 = '</div></div></div>'
+                $.each(a, function( i, st ){
+                    if (st.value == value.status){
+                        todoListData += htmlText1+title+htmlText2+description+'</br><span class="badge badge-pill bg-dark">'+st.name+'</span><button value="'+value.id+'" class="btnDeleteTodo badge badge-pill bg-danger">Del</button><button value="'+value.id+'" class="btnEdit badge badge-pill bg-warning">Edit</button>'+htmlText3;
+                        $('#accordionTodoList').append(todoListData);
+                    }
+                });
+        });
+        });
+    })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>

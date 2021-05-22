@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Business.Abstract;
+using Business.Concrete;
 using Entities.Concrete;
+using Entities.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TodoAppAPI.Controllers
 {
@@ -50,6 +49,11 @@ namespace TodoAppAPI.Controllers
         [HttpPost("add")]
         public IActionResult Add(Todo todo)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            todo.CreatedDate = DateTime.Now;
             var result = _todoService.Add(todo);
             if (result.Success)
             {
@@ -61,8 +65,9 @@ namespace TodoAppAPI.Controllers
 
 
         [HttpPost("delete")]
-        public IActionResult Delete(Todo todo)
+        public IActionResult Delete(DeleteTodo deleteTodo)
         {
+            Todo todo = new Todo {ID = deleteTodo.Id};
             var result = _todoService.Delete(todo);
             if (result.Success)
             {
@@ -74,9 +79,13 @@ namespace TodoAppAPI.Controllers
 
 
 
-        [HttpPost("Update")]
+        [HttpPost("update")]
         public IActionResult Update(Todo todo)
         {
+            var data = _todoService.GetById(todo.ID);
+
+            todo.CreatedDate = data.Data.CreatedDate;
+
             var result = _todoService.Update(todo);
             if (result.Success)
             {
@@ -84,6 +93,12 @@ namespace TodoAppAPI.Controllers
             }
 
             return BadRequest(result);
+        }
+
+        [HttpGet("getstatus")]
+        public IActionResult GetStatus()
+        {
+            return Ok(EnumExtensions.GetValues<TodoStatus>());
         }
     }
 }

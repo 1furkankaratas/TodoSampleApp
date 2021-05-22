@@ -6,4 +6,10 @@
         Process = 1,
         Complated = 2
     }
+
+    public class EnumValue
+    {
+        public string Name { get; set; }
+        public int Value { get; set; }
+    }
 }
