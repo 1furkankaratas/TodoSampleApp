@@ -1,4 +1,4 @@
-# :tw-1f449: :tw-1f449: Todo App :tw-1f448: :tw-1f448:
+# :crystal_ball: Todo App :crystal_ball:
 ## Usage
 
 ![](https://raw.githubusercontent.com/1furkankaratas/TodoSampleApp/master/TodoAppUI/todoapp.jpg?token=ASIUT4PJTBAU4W4GIHYSXPDAVKNPS)
